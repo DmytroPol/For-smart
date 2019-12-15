@@ -1,1 +1,97 @@
+using System;
 
+using System.Linq;
+
+
+public class Program
+
+{
+
+	public class NumberDegree
+
+	{
+
+		public int Origin { get; set; }
+
+		public double NewValue { get; set; }
+
+	}	
+
+
+	public static int[] GetMaxNumberFromArray(int[] arr)
+
+	{
+
+		var numberDegree = new NumberDegree[arr.Length];
+
+
+		// Проходим по массиву и нНаходим максимальное кол-во цифр в числе
+
+		int maxCountDigits = 0;
+
+		for (var i = 0; i < arr.Length; i++)
+
+		{
+
+			var countDigits = arr[i].ToString().Length;
+
+			if (maxCountDigits < countDigits)
+
+			{
+
+				maxCountDigits = countDigits;
+
+			}
+
+		}
+
+
+		// формируем новый массив, дополняя каждое число первой цифрой до степени макисмального числа в массиве
+
+		// Например, [ 819, 6, 89, 47 ] -> [ 819, 666, 899, 477 ]
+
+		for (var j = 0; j < arr.Length; j++)
+
+		{
+
+			var countRepeat = maxCountDigits - arr[j].ToString().Length;
+
+			var firstDigit = arr[j].ToString().FirstOrDefault();
+
+			var newValue = arr[j].ToString() + string.Concat(Enumerable.Repeat(firstDigit, countRepeat));
+
+			numberDegree[j] = new NumberDegree { Origin = arr[j], NewValue = Convert.ToDouble(newValue) };
+
+		}
+
+
+		// Сортируем "новый" массив по убыванию
+
+		int[] maxNumberFromArr = numberDegree.OrderByDescending(x => x.NewValue).Select(x => x.Origin).ToArray();
+
+
+		return maxNumberFromArr;
+
+	}
+
+
+	public static void Main()
+
+	{
+
+		Console.WriteLine("UniLecs");
+
+		var arr = new int[] { 50, 2, 1, 9 };
+
+		foreach(var number in GetMaxNumberFromArray(arr))
+
+		{
+
+			Console.Write(number + " ");
+
+		}
+
+	}
+
+}
+// 9 50 2 1
