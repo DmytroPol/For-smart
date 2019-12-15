@@ -1,1 +1,50 @@
+/**
+	Напишите функцию, которая принимает список не отрицательных целых чисел, упорядочивает их так, чтобы они составляли максимально возможное число. Например, [50, 2, 1, 9], наибольшее сформированное число равно 95021.
+*/
 
+function max(numbers) {
+	return numbers.map(n => String(n)).sort().reverse().join('');
+}
+
+/**
+	Напишите программу, которая поместит + , –, или пробел в промежутках между цифрами 1, 2, …, 9 (в таком порядке) так, чтобы в результате получилось 100. Например: 1 + 2 + 34 — 5 + 67 — 8 + 9 = 100.
+*/
+
+const OPERATIONS = [
+	{
+		key: '+',
+		str: (expr, n) => `${expr} + ${n}`,
+		exec: (a, b) => parseInt(a) + parseInt(b)
+	},
+	{
+		key: '-',
+		str: (expr, n) => `${expr} - ${n}`,
+		exec: (a, b) => parseInt(a) - parseInt(b)
+	},
+	{
+		key: 'join',
+		str: (expr, n) => `${expr}${n}`,
+		exec: (sum, n, expr) => {
+			const lastN = expr.split(/\D/).slice(-1)[0];
+			return sum - parseInt(lastN) + parseInt(`${lastN}${n}`);
+		}
+	}
+];
+
+function main(numbers, sum) {
+	let result = [];
+	const iter = ({expr, num, cSum, index}) => {
+		if (cSum >= sum || index > numbers.length - 1) {
+			cSum === sum && result.push(expr);
+			return;
+		}
+		for (let i = 0; i < OPERATIONS.length; i++) {
+			let op = OPERATIONS[i];
+			let num = numbers[index];
+			iter({ expr: op.str(expr, num), cSum: op.exec(cSum, num, expr), num, index: index + 1 });
+		}
+	};
+	let num = numbers[0];
+	iter({ expr: `${num}`, cSum: num, num, index: 1 });
+	return result;
+}
